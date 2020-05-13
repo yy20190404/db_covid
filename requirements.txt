@@ -9,3 +9,14 @@ dash-core-components
 dash-table
 dash-daq 
 dash_bootstrap_components
+time
+datetime
+gc
+os
+sys
+numpy
+pandas
+requests
+requests_html
+matplotlib
+japanize_matplotlib
