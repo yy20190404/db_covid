@@ -1,0 +1,11 @@
+requests-html
+seaborn
+japanize-matplotlib
+flask
+plotly
+dash
+dash-html-components
+dash-core-components
+dash-table
+dash-daq 
+dash_bootstrap_components
