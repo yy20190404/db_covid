@@ -9,8 +9,6 @@ dash-core-components
 dash-table
 dash-daq 
 dash_bootstrap_components
-time
-datetime
 numpy
 pandas
 requests
