@@ -14,7 +14,7 @@ import pandas as pd
 import requests
 from requests_html import HTMLSession
 
-#%matplotlib inline
+
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib.pyplot import figure
@@ -37,7 +37,7 @@ def down_load():
   URLWW3 = "https://data.humdata.org/hxlproxy/api/data-preview.csv?url=https%3A%2F%2Fraw.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data%2Fcsse_covid_19_time_series%2Ftime_series_covid19_recovered_global.csv&filename=time_series_covid19_recovered_global.csv"
   URLJP  = "https://dl.dropboxusercontent.com/s/6mztoeb6xf78g5w/COVID-19.csv"
   SAVE_NAMES = ["covid19_ww_confirmed_global.csv", "covid19_ww_deaths_global.csv","covid19_ww_recovered_global.csv", "covid19_jp.csv"]
-  DIRCSV = "static/csv/"
+  DIRCSV = "./static/csv/"
   urls = [URLWW1, URLWW2, URLWW3, URLJP]
   del_cols = ["Province/State", "Lat", "Long"]
   
@@ -151,14 +151,14 @@ def down_load():
     day = datetime.datetime.strptime(str(date), '%m/%d/%Y')
     dates.append(day.strftime('%Y-%m-%d'))
   df['Date'] = dates
-  df.to_csv("static/csv/covid19_jp_all.csv")
+  df.to_csv(DIRCSV + "covid19_jp_all.csv")
 
   ## 日本の都道府県別・日付別発症者数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Sex", "Status"], axis=1)
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
-  dfc.to_csv("static/csv/covid19_jp_prf_cfm.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_cfm.csv")
 
   ## 日本の都道府県別・日付別死者数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Sex", "Number"], axis=1)
@@ -168,7 +168,7 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
-  dfc.to_csv("static/csv/covid19_jp_prf_dth.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_dth.csv")
   
   ## 日本の都道府県別・日付別退院者数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Sex", "Number"], axis=1)
@@ -178,7 +178,7 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
-  dfc.to_csv("static/csv/covid19_jp_prf_rcv.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_rcv.csv")
 
   ## 日本の都道府県別・ 男性数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Status", "Number"], axis=1)
@@ -187,7 +187,7 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
-  dfc.to_csv("static/csv/covid19_jp_prf_male.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_male.csv")
 
   ## 日本の都道府県別・ 女性数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Status", "Number"], axis=1)
@@ -196,7 +196,7 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
-  dfc.to_csv("static/csv/covid19_jp_prf_female.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_female.csv")
 
   ## 日本の都道府県別・ 年代別リスト
   dfc = df.drop(["No.", "Date", "Saved_Date", "Sex", "Status"], axis=1)
@@ -226,7 +226,7 @@ def down_load():
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
   dfc = dfc.replace(np.nan, 0.0)
   dfc = dfc.astype(int)
-  dfc.to_csv("static/csv/covid19_jp_prf_gen.csv")
+  dfc.to_csv(DIRCSV + "covid19_jp_prf_gen.csv")
 
 if __name__ == "__main__":
   down_load()
