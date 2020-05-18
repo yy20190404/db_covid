@@ -1,4 +1,4 @@
-,No.,Prefecture,Date,Saved_Date,Genelation,Sex,Status,Number
+﻿,No.,Prefecture,Date,Saved_Date,Genelation,Sex,Status,Number
 0,1.0,神奈川県,2020-01-15,2020-05-18 09:43,30 ,男性,recovered,1.0
 1,2.0,東京都,2020-01-24,,40 ,男性,退院またはdeath,1.0
 2,3.0,東京都,2020-01-25,,30 ,女性,退院またはdeath,1.0
