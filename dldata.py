@@ -15,10 +15,7 @@ import requests
 from requests_html import HTMLSession
 
 
-import matplotlib.pyplot as plt
-from matplotlib import rcParams
-from matplotlib.pyplot import figure
-import japanize_matplotlib
+
 
 
 def get_converted_multi_columns(df, just_second=False, to_snake_case=True):
@@ -52,7 +49,7 @@ def down_load():
     # Download a target file if it is not exist
     if os.path.isfile(DIRCSV + f_name) == False:
       r = requests.get(urls[i], headers=HEADERS_DIC)
-      with open(DIRCSV + f_name, mode='w') as f:
+      with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
         f.write(r.text)
 
       ## Reshape csv file
@@ -83,7 +80,7 @@ def down_load():
       ## Download and reshape csv file when the exist file not made on today
       if str(dt) != str(today):
         r = requests.get(urls[i], headers=HEADERS_DIC)
-        with open(DIRCSV + f_name, mode='w') as f:
+        with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
           f.write(r.text)
         df = pd.read_csv(DIRCSV + f_name)
         df = df.drop(del_cols, axis=1) 
@@ -113,7 +110,7 @@ def down_load():
   # Download a target file if it is not exist
   if os.path.isfile(DIRCSV + f_name) == False:
     r = requests.get(urls[3], headers=HEADERS_DIC)
-    with open(DIRCSV + f_name, mode='w') as f:
+    with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
       f.write(r.text)
   else:
     dt = os.path.getmtime(DIRCSV + f_name)
@@ -121,7 +118,7 @@ def down_load():
     dt = dt.strftime('%Y-%m-%d')
     if today != dt:
       r = requests.get(urls[3], headers=HEADERS_DIC)
-      with open(DIRCSV + f_name, mode='w') as f:
+      with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
         f.write(r.text)
   ## Reshape csv file
   df = pd.read_csv(DIRCSV + f_name)
