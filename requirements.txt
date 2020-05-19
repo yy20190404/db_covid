@@ -14,4 +14,4 @@ pandas
 requests
 requests_html
 matplotlib
-
+gunicorn
