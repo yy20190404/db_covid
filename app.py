@@ -9,10 +9,9 @@ from dash.dependencies import Input, Output
 import numpy as np
 import pandas as pd
 import dldata
-import time
 
 dldata.down_load()
-time.sleep(10)
+
 
 DIRCSV = 'static/csv/'
 CSV_FILES = ('covid19_ww_confirmed_global.csv',
@@ -113,9 +112,4 @@ def update_graph(stock_ticker):
 
 
 if __name__ == '__main__':
-    import dldata
-    import time
-
-    dldata.down_load()
-    time.sleep(10)
     app.run_server(debug=True)
