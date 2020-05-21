@@ -1,6 +1,8 @@
+numpy
+pandas
+requests
 requests-html
 seaborn
-japanize-matplotlib
 flask
 plotly
 dash
@@ -9,9 +11,4 @@ dash-core-components
 dash-table
 dash-daq 
 dash_bootstrap_components
-numpy
-pandas
-requests
-requests_html
-matplotlib
 gunicorn
