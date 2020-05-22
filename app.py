@@ -24,17 +24,19 @@ CSV_FILES = ('covid19_ww_confirmed_global.csv',
             'covid19_jp_prf_female.csv',
             'covid19_jp_prf_gen.csv')
 
-df0 = pd.read_csv(DIRCSV + CSV_FILES[0])
-df1 = pd.read_csv(DIRCSV + CSV_FILES[1])
-df2 = pd.read_csv(DIRCSV + CSV_FILES[2])
-df3 = pd.read_csv(DIRCSV + CSV_FILES[3])
-df4 = pd.read_csv(DIRCSV + CSV_FILES[4])
-df5 = pd.read_csv(DIRCSV + CSV_FILES[5])
-df6 = pd.read_csv(DIRCSV + CSV_FILES[6])
-df7 = pd.read_csv(DIRCSV + CSV_FILES[7])
-df8 = pd.read_csv(DIRCSV + CSV_FILES[8])
+#df0 = pd.read_csv(DIRCSV + CSV_FILES[0])
+df0 = pd.read_csv(DIRCSV + CSV_FILES[0], header=0, index_col=0)
+#df1 = pd.read_csv(DIRCSV + CSV_FILES[1], index_col=0)
+#df2 = pd.read_csv(DIRCSV + CSV_FILES[2], index_col=0)
+#df3 = pd.read_csv(DIRCSV + CSV_FILES[3], index_col=0)
+#df4 = pd.read_csv(DIRCSV + CSV_FILES[4], index_col=0)
+#df5 = pd.read_csv(DIRCSV + CSV_FILES[5], index_col=0)
+#df6 = pd.read_csv(DIRCSV + CSV_FILES[6], index_col=0)
+#df7 = pd.read_csv(DIRCSV + CSV_FILES[7], index_col=0)
+#df8 = pd.read_csv(DIRCSV + CSV_FILES[8], index_col=0)
 
-df0 = df0.set_index('Country/Region')
+
+#df0 = df0.set_index('Country/Region')
 df0.loc['Worldwide'] = df0.sum()
 df0_x = df0.columns.tolist()
 df0_y = df0.loc['Worldwide', ].tolist()
@@ -46,6 +48,7 @@ for x in df0_z:
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 # 背景色と文字色の設定
 colors = {
@@ -111,5 +114,5 @@ def update_graph(stock_ticker):
   return fig
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+#if __name__ == '__main__':
+  #app.run_server(debug=True)

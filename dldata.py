@@ -14,10 +14,6 @@ import pandas as pd
 import requests
 from requests_html import HTMLSession
 
-
-
-
-
 def get_converted_multi_columns(df, just_second=False, to_snake_case=True):
   if just_second:
     return [col[1] for col in df.columns.values]
