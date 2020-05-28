@@ -1,4 +1,4 @@
-FROM repo/image
+FROM alpine
 
 COPY ./supervisord.conf /etc/
 
