@@ -1,4 +1,4 @@
-
+﻿
 
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
@@ -31,13 +31,47 @@ def down_load():
   URLJP  = "https://dl.dropboxusercontent.com/s/6mztoeb6xf78g5w/COVID-19.csv"
   SAVE_NAMES = ["covid19_ww_confirmed_global.csv", "covid19_ww_deaths_global.csv","covid19_ww_recovered_global.csv", "covid19_jp.csv"]
   DIRCSV = "./static/csv/"
+  COMP_FILES = ["base_covid19_ww_confirmed_global.csv",
+    "base_covid19_ww_deaths_global.csv",
+    "base_covid19_ww_recovered_global.csv",
+    "covid19_jp.csv",
+    "covid19_jp_all.csv",
+    "covid19_jp_prf_cfm.csv",
+    "covid19_jp_prf_dth.csv",
+    "covid19_jp_prf_female.csv",
+    "covid19_jp_prf_gen.csv",
+    "covid19_jp_prf_male.csv",
+    "covid19_jp_prf_rcv.csv",
+    "covid19_ww_confirmed_global.csv",
+    "covid19_ww_deaths_global.csv",
+    "covid19_ww_recovered_global.csv",
+    "daily_covid19_jp_prf_cfm.csv",
+    "daily_covid19_jp_prf_dth.csv",
+    "daily_covid19_jp_prf_female.csv",
+    "daily_covid19_jp_prf_male.csv",
+    "daily_covid19_jp_prf_rcv.csv",
+    "daily_covid19_ww_confirmed_global.csv",
+    "daily_covid19_ww_deaths_global.csv",
+    "daily_covid19_ww_recovered_global.csv"]
   urls = [URLWW1, URLWW2, URLWW3, URLJP]
   del_cols = ["Province/State", "Lat", "Long"]
+
+  today = datetime.date.today()
+  are_allfiles = True
+  for x in COMP_FILES:
+    if os.path.isfile(DIRCSV + x) == False: are_allfiles = False
+  if are_allfiles:
+    dt = os.path.getmtime(DIRCSV + COMP_FILES[16])
+    dt = datetime.datetime.fromtimestamp(dt)
+    dt = dt.strftime('%Y-%m-%d')
+    print(today, dt)
+    if str(today) == str(dt): 
+      sys.exit(0)
   
   ##############################################################################
   ## Reshape of worldwide COVID19 daily numbers csv
   ##############################################################################
-  today = datetime.date.today()
+  
   save_names = SAVE_NAMES.copy()
   del save_names[-1]
   i = 0
@@ -45,11 +79,11 @@ def down_load():
     # Download a target file if it is not exist
     if os.path.isfile(DIRCSV + f_name) == False:
       r = requests.get(urls[i], headers=HEADERS_DIC)
-      with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
+      with open(DIRCSV + 'base_' + f_name, mode='w', encoding='utf_8_sig') as f:
         f.write(r.text)
 
       ## Reshape csv file
-      df = pd.read_csv(DIRCSV + f_name)
+      df = pd.read_csv(DIRCSV + 'base_' + f_name, encoding='utf_8_sig')
       ### Drop unnessesary columns
       df = df.drop(del_cols, axis=1) 
       ### Reshape date style          
@@ -76,11 +110,13 @@ def down_load():
       ## Download and reshape csv file when the exist file not made on today
       if str(dt) != str(today):
         r = requests.get(urls[i], headers=HEADERS_DIC)
-        with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
+        with open(DIRCSV + 'base_' + f_name, mode='w', encoding='utf_8_sig') as f:
           f.write(r.text)
-        df = pd.read_csv(DIRCSV + f_name)
+        df = pd.read_csv(DIRCSV + 'base_' + f_name, encoding='utf_8_sig')
         df = df.drop(del_cols, axis=1) 
         cols = df.columns
+        if cols[0] != 'Country/Region':
+          df = df.reset_index()
         dates = []
         for col in cols:
           if col == 'Country/Region':
@@ -94,9 +130,19 @@ def down_load():
         df = df.set_index('Country/Region')
         ### Save as csv file
         df.to_csv(DIRCSV + f_name, encoding='utf_8_sig')
+
         ### Delete dataframe instance
         del df
     i += 1
+    ### Daily csv
+    df = pd.read_csv(DIRCSV + f_name, encoding='utf_8_sig')
+    df = df.set_index('Country/Region')
+    for j in range(0, len(df.index), 1):
+        for k in range(len(df.columns)-1, 0, -1):
+          df.iloc[j, k] = df.iloc[j, k] - df.iloc[j, k-1]
+    df.to_csv(DIRCSV + 'daily_' + f_name, encoding='utf_8_sig')
+    del df
+    
 
   ##############################################################################
   ## Reshape of Japanese COVID19 daily numbers csv
@@ -106,7 +152,7 @@ def down_load():
   # Download a target file if it is not exist
   if os.path.isfile(DIRCSV + f_name) == False:
     r = requests.get(urls[3], headers=HEADERS_DIC)
-    with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
+    with open(DIRCSV + f_name, mode='w', encoding='utf_8_sig') as f:
       f.write(r.text)
   else:
     dt = os.path.getmtime(DIRCSV + f_name)
@@ -114,16 +160,17 @@ def down_load():
     dt = dt.strftime('%Y-%m-%d')
     if today != dt:
       r = requests.get(urls[3], headers=HEADERS_DIC)
-      with open(DIRCSV + f_name, mode='w', encoding='utf_8') as f:
+      with open(DIRCSV + f_name, mode='w', encoding='utf_8_sig') as f:
         f.write(r.text)
+    
+  df = pd.read_csv(DIRCSV + f_name, encoding='utf_8_sig',
+                   dtype={1: str, 3: str, 4: str, 23: str, 24: str, 25: str, 31: str, 32: str, 42: str, 43: str})
   ## Reshape csv file
-  df = pd.read_csv(DIRCSV + f_name)
   
   ################################################################################
   ## Download of Japanese COVID19 data
   ## Reshape the data
   ################################################################################
-  cols = df.columns
   df = df.loc[:, ["通し", "受診都道府県", "確定日", "更新日時", "年代", "性別", "ステータス", "人数"]]
   df.columns = ["No.", "Prefecture", "Date", "Saved_Date", "Genelation", "Sex", "Status", "Number"]
   df['Status'] = df['Status'].replace(np.nan, "confirmed")
@@ -144,6 +191,7 @@ def down_load():
     day = datetime.datetime.strptime(str(date), '%m/%d/%Y')
     dates.append(day.strftime('%Y-%m-%d'))
   df['Date'] = dates
+
   df.to_csv(DIRCSV + "covid19_jp_all.csv", encoding='utf_8_sig')
 
   ## 日本の都道府県別・日付別発症者数リスト
@@ -151,6 +199,11 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
+  dfc.to_csv(DIRCSV + "daily_covid19_jp_prf_cfm.csv", encoding='utf_8_sig')
+  # Daily
+  for i in range(0, len(dfc.index), 1):
+      for j in range(1, len(dfc.columns), 1):
+        dfc.iloc[i, j] = int(dfc.iloc[i, j-1]) + int(dfc.iloc[i, j])
   dfc.to_csv(DIRCSV + "covid19_jp_prf_cfm.csv", encoding='utf_8_sig')
 
   ## 日本の都道府県別・日付別死者数リスト
@@ -161,8 +214,13 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
+  dfc.to_csv(DIRCSV + "daily_covid19_jp_prf_dth.csv", encoding='utf_8_sig')
+  # Daily
+  for i in range(0, len(dfc.index), 1):
+      for j in range(1, len(dfc.columns), 1):
+        dfc.iloc[i, j] = int(dfc.iloc[i, j-1]) + int(dfc.iloc[i, j])
   dfc.to_csv(DIRCSV + "covid19_jp_prf_dth.csv", encoding='utf_8_sig')
-  
+
   ## 日本の都道府県別・日付別退院者数リスト
   dfc = df.drop(["No.", "Saved_Date", "Genelation", "Sex", "Number"], axis=1)
   dfc = dfc[dfc["Status"] != "confirmed"]
@@ -171,6 +229,11 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
+  dfc.to_csv(DIRCSV + "daily_covid19_jp_prf_rcv.csv", encoding='utf_8_sig')
+  # Daily
+  for i in range(0, len(dfc.index), 1):
+      for j in range(1, len(dfc.columns), 1):
+        dfc.iloc[i, j] = int(dfc.iloc[i, j-1]) + int(dfc.iloc[i, j])
   dfc.to_csv(DIRCSV + "covid19_jp_prf_rcv.csv", encoding='utf_8_sig')
 
   ## 日本の都道府県別・ 男性数リスト
@@ -180,6 +243,11 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
+  dfc.to_csv(DIRCSV + "daily_covid19_jp_prf_male.csv", encoding='utf_8_sig')
+  # Daily
+  for i in range(0, len(dfc.index), 1):
+      for j in range(1, len(dfc.columns), 1):
+        dfc.iloc[i, j] = int(dfc.iloc[i, j-1]) + int(dfc.iloc[i, j])
   dfc.to_csv(DIRCSV + "covid19_jp_prf_male.csv", encoding='utf_8_sig')
 
   ## 日本の都道府県別・ 女性数リスト
@@ -189,6 +257,11 @@ def down_load():
   dfc = dfc.groupby(["Prefecture", "Date"]).sum().unstack()
   dfc = dfc.replace(np.nan, 0.0)
   dfc.columns = get_converted_multi_columns(dfc, just_second=True)
+  dfc.to_csv(DIRCSV + "daily_covid19_jp_prf_female.csv", encoding='utf_8_sig')
+  # Daily
+  for i in range(0, len(dfc.index), 1):
+      for j in range(1, len(dfc.columns), 1):
+        dfc.iloc[i, j] = int(dfc.iloc[i, j-1]) + int(dfc.iloc[i, j])
   dfc.to_csv(DIRCSV + "covid19_jp_prf_female.csv", encoding='utf_8_sig')
 
   ## 日本の都道府県別・ 年代別リスト
